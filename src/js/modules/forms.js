@@ -1,14 +1,12 @@
-export default () => {
+import checkNumInputs from './checkNumInputs';
+import { closeUnusedModals } from './modals';
+
+export default (state) => {
   const forms = document.querySelectorAll('form');
   const inputs = document.querySelectorAll('input');
-  const phoneInputs = document.querySelectorAll('input[name="user_phone"]');
+  const windows = document.querySelectorAll('[data-modal]');
 
-  phoneInputs.forEach((input) => {
-    input.addEventListener('input', () => {
-      // eslint-disable-next-line no-param-reassign
-      input.value = input.value.replace(/\D/, '');
-    });
-  });
+  checkNumInputs('input[name="user_phone"]');
 
   const message = {
     loading: 'Загрузка...',
@@ -42,6 +40,15 @@ export default () => {
       form.appendChild(statusMessage);
 
       const formData = new FormData(form);
+      if (form.getAttribute('data-calc') === 'end') {
+        const keys = Object.keys(state);
+        for (let i = 0; i < keys.length; i += 1) {
+          const key = keys[i];
+          const value = state[key];
+          formData.append(key, value);
+        }
+      }
+
       postData('assets/server.php', formData)
         .then((data) => {
           console.log(data);
@@ -54,7 +61,8 @@ export default () => {
           clearInputs();
           setTimeout(() => {
             statusMessage.remove();
-          }, 5000);
+            closeUnusedModals(windows);
+          }, 3000);
         });
     });
   });
