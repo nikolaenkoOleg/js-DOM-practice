@@ -13,14 +13,27 @@ const showModalByTime = (selector, time) => {
   }, time);
 };
 
+const calcScroll = () => {
+  const div = document.createElement('div');
+  div.style.width = '50px';
+  div.style.height = '50px';
+  div.style.overflow = 'scroll';
+  div.style.visibility = 'hidden';
+
+  document.body.appendChild(div);
+  const scrollWidth = div.offsetWidth - div.clientWidth;
+  div.remove();
+
+  return scrollWidth;
+};
+
 export default () => {
   const bindModal = (triggerSelector, modalSelector, closeSelector, isImportantModal = false) => {
     const triggers = document.querySelectorAll(triggerSelector);
     const modal = document.querySelector(modalSelector);
     const close = document.querySelector(closeSelector);
     const windows = document.querySelectorAll('[data-modal]');
-    console.log(triggers);
-
+    const scroll = calcScroll();
 
     // обработка кнопок, вызывающих модальные окна
     triggers.forEach((trigger) => {
@@ -33,7 +46,7 @@ export default () => {
 
         modal.style.display = 'block';
         document.body.style.overflow = 'hidden';
-        // document.body.classList.add('modal-open');
+        document.body.style.marginRight = `${scroll}px`;
       });
     });
 
@@ -44,7 +57,7 @@ export default () => {
 
       modal.style.display = 'none';
       document.body.style.overflow = '';
-      // document.body.classList.add.remove('modal-open');
+      document.body.style.marginRight = '0px';
     });
 
     // обработка клика на подолжку, закрыващего модальное окно
@@ -57,7 +70,7 @@ export default () => {
         closeUnusedModals(windows);
         modal.style.display = 'none';
         document.body.style.overflow = '';
-        // document.body.classList.add.remove('modal-open');
+        document.body.style.marginRight = '0px';
       }
     });
   };
